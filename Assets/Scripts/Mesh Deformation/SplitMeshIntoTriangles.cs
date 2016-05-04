@@ -10,6 +10,9 @@ public class SplitMeshIntoTriangles : MonoBehaviour {
     private int pillOneTriangleCount = 0;
     private GameObject[] pillOneMeshes = new GameObject[1000];
     private int trianglesDestroyed = 0;
+    private bool destroyed = false;
+    private bool created = false;
+    private bool moving = false;
 
     [SerializeField]
     private GameObject pill;
@@ -22,6 +25,7 @@ public class SplitMeshIntoTriangles : MonoBehaviour {
     }
 
     IEnumerator SplitMesh() {
+        pillOneTriangleCount = 0;
         float slowMotionSpeed = 1f;
 
         MeshFilter MF = GetComponent<MeshFilter>();
@@ -63,16 +67,16 @@ public class SplitMeshIntoTriangles : MonoBehaviour {
                 rb.angularDrag = 10; //rb.angularDrag * slowMotionSpeed;
                 rb.useGravity = true;*/
 
-                //pillOneMeshes[pillOneTriangleCount] = GO;
-                //pillOneTriangleCount++;
+                pillOneMeshes[pillOneTriangleCount] = GO;
+                pillOneTriangleCount++;
 
-                Destroy(GO, 5 + Random.Range(0.0f, 5.0f));
+                //Destroy(GO, 5 + Random.Range(0.0f, 5.0f));
             }
         }
         MR.enabled = false;
-
         Time.timeScale = slowMotionSpeed;
         Time.fixedDeltaTime = slowMotionSpeed * 0.02f;
+        created = true;
         yield return new WaitForSeconds(0.5f);
         Time.timeScale = 1;
         Time.fixedDeltaTime = 0.02f;
@@ -82,8 +86,14 @@ public class SplitMeshIntoTriangles : MonoBehaviour {
         //Time.timeScale = 1.0f;
         //Destroy(gameObject);
     }
+    
     void OnMouseDown() {
-        StartCoroutine(SplitMesh());
+        if(!destroyed) {
+            StartCoroutine(SplitMesh());
+            Destroy(GetComponent<Rigidbody>());
+            Destroy(GetComponent<CapsuleCollider>());
+            destroyed = true;
+        }
     }
 
     void Update() {
@@ -105,17 +115,39 @@ public class SplitMeshIntoTriangles : MonoBehaviour {
         //    Debug.Log("Is not visible");
         //}
 
-            //for(int i = 0; i < pillOneMeshes.Length; i++) {
-             //   if(pillOneMeshes[i] != null && !IsVisibleFrom(pillOneMeshes[i].GetComponent<Renderer>(), Camera.main)) {
-              //      Destroy(pillOneMeshes[i]);
-              //      trianglesDestroyed++;
-              //  }
-        
+            for(int i = 0; i < pillOneMeshes.Length; i++) {
+                if(pillOneMeshes[i] != null) { 
+                    if(!IsVisibleFrom(pillOneMeshes[i].GetComponent<Renderer>(), Camera.main)) {
+                        Destroy(pillOneMeshes[i]);
+                        trianglesDestroyed++;
+                        //Debug.Log("Destroyed");
+                    } else {
+                        if(pillOneMeshes[i].GetComponent<Rigidbody>() != null) {
+                            float speed = pillOneMeshes[i].GetComponent<Rigidbody>().velocity.magnitude;
+                            //Debug.Log(speed);
+
+                            if(speed > 10f) {
+                                moving = true;
+                            }
+
+                            if (moving && speed < 0.025f) {
+                                //Destroy or disable Rigidbody to make the time stop effect
+                                Destroy(pillOneMeshes[i].GetComponent<Rigidbody>());
+                                Destroy(pillOneMeshes[i].GetComponent<BoxCollider>());
+                                //Debug.Log("Check");
+                            }
+                        }
+                        //Debug.Log("visible");
+                    }
+                } else {
+                    //Debug.Log("Already destroyed");
+                }
+
             //    if(pillOneMeshes[i] != null && !pillOneMeshes[i].GetComponent<Renderer>().isVisible) {
             //        Debug.Log("Not visible");
             //        Destroy(pillOneMeshes[i]);
             //        pillOneMeshes[i] = null;
-            //    }
+            }
         //}
 
         //Debug.Log("Trianlges Destroyed: " + trianglesDestroyed);
