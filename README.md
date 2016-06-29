@@ -1,4 +1,4 @@
-Destructable Meshes and Terrain Unity Experiments
+Destructible Meshes and Terrain Unity Experiments
 =================================================
 Added slow motion to Bunny83's mesh explode function. Mass compensation will be added later.
 
