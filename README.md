@@ -3,10 +3,10 @@ Destructible Meshes and Terrain Unity Experiments
 Added slow motion to Bunny83's mesh explode function. Mass compensation will be added later.
 
 Slow Motion:
-![Screenshot](http://i.imgur.com/rkvzDmz.gif)
+![Slowmo](http://i.imgur.com/rkvzDmz.gif)
 
 Normal Speed:
-![Screenshot](http://i.imgur.com/0sXu2Td.gif)
+![Normal](http://i.imgur.com/0sXu2Td.gif)
 
 
 
